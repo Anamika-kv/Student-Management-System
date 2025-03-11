@@ -1,10 +1,9 @@
-asgiref==3.8.1
-dj-database-url==2.3.0
-Django==5.1.7
-gunicorn==23.0.0
-packaging==24.2
-psycopg2==2.9.10
-sqlparse==0.5.3
-typing_extensions==4.12.2
-tzdata==2025.1
-whitenoise==6.9.0
+Django>=4.0.0
+djangorestframework>=3.14.0
+psycopg2>=2.9.3
+gunicorn>=21.0.0  # For running the app in production
+Pillow>=9.0.0  # For image handling
+django-environ>=0.9.0  # For environment variables
+whitenoise>=6.0.0  # For serving static files
+
+
