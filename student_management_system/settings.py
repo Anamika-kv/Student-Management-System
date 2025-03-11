@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-mqw+-(sxpu)$38$u$z&*ko4j39pgx!xw9p9*93yhslm!)x4k55
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =  ["*"]
+ALLOWED_HOSTS = ["*"]
 MEDIA_URL="media/"
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'student_management_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR,'db.sqlite3'),
         # 'ENGINE':'django.db.backends.mysql',
         # 'NAME':'student_management',
         # 'USER':'student_management',

@@ -268,6 +268,21 @@ HOME
             })
     });
 
-
+    function sendToServer(token){
+         $.ajax({
+                url:'{% url 'student_fcmtoken_save' %}',
+                type:'POST',
+                data:{token:token},
+            })
+            .done(function(response){
+                if(response=="True"){
+                    console.log("Token Save")
+                }
+                else{
+                    console.log("Error in Token Save")
+                }
+            });
+    }
+    IntitalizeFireBaseMessaging();
 </script>
 {% endblock custom_js %}

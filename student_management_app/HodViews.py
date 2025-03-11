@@ -2,7 +2,7 @@ import datetime
 import json
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from student_management_app.models import CustomUser, Courses,Subjects,Staffs,Students,SessionYearModel,FeedBackStudent,FeedBackStaff,LeaveReportStudent,LeaveReportStaff,Attendance,AttendanceReport
+from student_management_app.models import CustomUser, Courses,Subjects,Staffs,Students,SessionYearModel,FeedBackStudent,FeedBackStaff,LeaveReportStudent,LeaveReportStaff,Attendance,AttendanceReport,NotificationStaffs,NotificationStudent
 from student_management_app.forms import AddStudentForm,EditStudentForm
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
@@ -135,7 +135,7 @@ def add_student_save(request):
                 session_year=SessionYearModel.object.get(id=session_year_id)
                 user.students.session_year_id=session_year
                 user.students.gender=sex
-                user.students.profile_pic="profile_pic_url"
+                user.students.profile_pic=profile_pic_url
                 user.save()
                 messages.success(request, "successfully Added student")
                 return HttpResponseRedirect(reverse("add_student"))
@@ -145,7 +145,8 @@ def add_student_save(request):
                 return HttpResponseRedirect(reverse("add_student"))
         else:
             form=AddStudentForm(request.POST)
-            return render(request, "hod_template/add_student_template.html", {"form":form})
+            return render(request, "hod_template/add_student_template.html",{"form":form})
+
 
 def add_subject(request):
     courses = Courses.objects.all()
@@ -498,3 +499,58 @@ def admin_profile_save(request):
     except:
         messages.error(request, "Failed  to updated Profile")
         return HttpResponseRedirect(reverse("admin_profile"))
+
+def admin_send_notification_student(request):
+    students=Students.objects.all()
+    return render(request,"hod_template/student_notification.html",{"students":students})
+def admin_send_notification_staff(request):
+    staffs = Staffs.objects.all()
+    return render(request,"hod_template/staff_notification.html", {"staffs": staffs})
+
+@csrf_exempt
+def send_student_notification(request):
+    id=request.POST.get("id")
+    message=request.POST.get("message")
+    student=Students.objects.get(admin=id)
+    token=student.fcm_token
+    url="https://fcm.googleapis.com/fcm/send"
+    body={
+        "notification":{
+            "title":"Student Management System",
+            "body":message,
+            "click_action": "https://studentmanagementsystem22.herokuapp.com/student_all_notification",
+            "icon": "http://studentmanagementsystem22.herokuapp.com/static/dist/img/user2-160x160.jpg"
+        },
+        "to":token
+    }
+    headers={"Content-Type":"application/json","Authorization":"key=SERVER_KEY_HERE"}
+    data=request.post(url,data=json.dumps(body),headers=headers)
+    notification=NotificationStudent(student_id=student,message=message)
+    notification.save()
+    print(data.text)
+    return HttpResponse("True")
+
+@csrf_exempt
+def send_staff_notification(request):
+    id=request.POST.get("id")
+    message=request.POST.get("message")
+    staff=Staffs.objects.get(admin=id)
+    token=staff.fcm_token
+    url="https://fcm.googleapis.com/fcm/send"
+    body={
+        "notification":{
+            "title":"Student Management System",
+            "body":message,
+            "click_action":"https://studentmanagementsystem22.herokuapp.com/staff_all_notification",
+            "icon":"http://studentmanagementsystem22.herokuapp.com/static/dist/img/user2-160x160.jpg"
+        },
+        "to":token
+    }
+    headers={"Content-Type":"application/json","Authorization":"key=SERVER_KEY_HERE"}
+    data=request.post(url,data=json.dumps(body),headers=headers)
+    notification=NotificationStaffs(staff_id=staff,message=message)
+    notification.save()
+    print(data.text)
+    return HttpResponse("True")
+
+    pass
